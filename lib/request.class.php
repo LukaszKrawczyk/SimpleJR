@@ -12,7 +12,7 @@ require_once(dirname(__FILE__) . '/jsonrpc.class.php');
  * @version 2012.08.14
  * @license See the included LICENSE file for more information.
  * @copyright Lukasz Krawczyk
- * @author Lukasz Krawczyk <contact@lukasz.krawczyk.eu>
+ * @author Lukasz Krawczyk <contact@lukaszkrawczyk.eu>
  */
 class JSONRPCRequest extends JSONRPCObject {
 

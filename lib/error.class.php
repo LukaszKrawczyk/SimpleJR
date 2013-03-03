@@ -21,7 +21,7 @@
  * @version 2012.08.14
  * @license See the included LICENSE file for more information.
  * @copyright Lukasz Krawczyk
- * @author Lukasz Krawczyk <contact@lukasz.krawczyk.eu>
+ * @author Lukasz Krawczyk <contact@lukaszkrawczyk.eu>
  */
 class JSONRPCError extends JSONRPCObject {
 
@@ -50,10 +50,12 @@ class JSONRPCError extends JSONRPCObject {
     /**************************************************************************/
 
     /**
-     *
+     * Constructor
+     * 
      * @param int $code
      * @param string $message
      * @param mixed $data
+     * @throws InvalidArgumentException
      */
     public function __construct($code = null, $message = null, $data = null) {
         // validate and set code

@@ -9,7 +9,7 @@ require_once(dirname(__FILE__) . '/response.class.php');
  * @version 2012.08.14
  * @license See the included LICENSE file for more information.
  * @copyright Lukasz Krawczyk
- * @author Lukasz Krawczyk <contact@lukasz.krawczyk.eu>
+ * @author Lukasz Krawczyk <contact@lukaszkrawczyk.eu>
  */
 class JSONRPC {
 
@@ -68,14 +68,31 @@ class JSONRPC {
      *
      * @param string $json
      * @return JSONRPCRequest | JSONRPCResponse
+     * @throws InvalidArgumentException
      */
     public static function decode($json) {
         // type validation
-        if (is_string($json)) {
-            $object = json_decode($json);
+        if (!is_string($json)) {
+            $error = 'Function accepts string only.';
         } else {
-            throw new InvalidArgumentException(__FUNCTION__.' function accepts string only.');
+            $object = json_decode($json);
+            switch(json_last_error()) {
+                case JSON_ERROR_DEPTH:
+                    $error = 'Maximum stack depth exceeded';
+                    break;
+                case JSON_ERROR_CTRL_CHAR:
+                    $error = 'Unexpected control character found';
+                    break;
+                case JSON_ERROR_SYNTAX:
+                    $error = 'Syntax error, malformed JSON';
+                    break;
+                case JSON_ERROR_NONE:
+                default:
+                    $error = '';
+            }
         }
+
+        if (!empty($error)) throw new InvalidArgumentException(__FUNCTION__ . $error);
 
         // cast stdClass object to JSONRPCRequest or JSONRPCResponse object
         return self::objectCast($object);
@@ -233,6 +250,54 @@ class JSONRPC {
     }
 
     /**************************************************************************/
+
+    /**
+     * Sending JSONRPC object through HTTP POST
+     *
+     * @param JSONRPCObject $object
+     * @param string $url
+     * @return mixed
+     */
+    public static function send(JSONRPCObject $object, $url) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+        curl_setopt($ch, CURLOPT_VERBOSE, TRUE);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, self::encode($object));
+        curl_setopt($ch, CURLOPT_POST, 1);
+        $result = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            return curl_error($ch);
+        } else {
+            curl_close($ch);
+            return $result;
+        }
+    }
+
+    /**
+     * Listen to JSONRPC request
+     *
+     * @return JSONRPCObject
+     */
+    public static function listen() {
+        $json = file_get_contents('php://input');
+        return self::decode($json);
+    }
+    
+    /**
+     * Respond to JSONRPC request
+     * @param JSONRPCObject $object
+     */
+    public static function respond(JSONRPCObject $object) {
+        header('Content-type: application/json');
+        echo $object->toJSONRPC();
+        exit;
+    }
 }
 
 /**

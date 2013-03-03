@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>JSON RPC test</title>
+    <style>
+        body {
+            font-family: helvetica, arial, sans-serif;
+            font-weight: normal;
+            font-size: 85%;
+            color: #444;
+            background-color: #fafafa;
+        }
+
+        #box {
+            width: 500px;
+            margin: 50px auto;
+            border: 1px #aaa solid;
+            background: #fff;
+            padding: 20px;
+        }
+    </style>
+    <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+	<script>
+        $(function(){
+            var request = {
+                method: 'math.add',
+                params: [1, 4]
+            };
+
+            $('#btnRequest').click(function(){
+                $.ajax({
+                    type: 'post',
+                    url: './server.php',
+                    dataType: 'json',
+                    contentType: "application/json",
+                    data: JSON.stringify(request)
+                })
+                .done(function(data){
+                    console.info(data);
+                    alert(
+                    'Request : ' + JSON.stringify(request) + "\n\n" +
+                    'Response : ' + JSON.stringify(data)
+                    );
+                })
+                .fail(function(data){
+                    console.error(data);
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <section id="box">
+        <button id="btnRequest">JSONRPC request</button>
+    </section>
+</body>
+</html>

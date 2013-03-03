@@ -13,7 +13,7 @@ require_once(dirname(__FILE__) . '/error.class.php');
  * @version 2012.08.14
  * @license See the included LICENSE file for more information.
  * @copyright Lukasz Krawczyk
- * @author Lukasz Krawczyk <contact@lukasz.krawczyk.eu>
+ * @author Lukasz Krawczyk <contact@lukaszkrawczyk.eu>
  */
 class JSONRPCResponse extends JSONRPCObject {
 
@@ -43,7 +43,7 @@ class JSONRPCResponse extends JSONRPCObject {
      * This member is REQUIRED.
      * It MUST be the same as the value of the id member in the Request Object.
      * If there was an error in detecting the id in the Request object (e.g. Parse error/Invalid Request), it MUST be Null.
-     * @var type
+     * @var int
      */
     public $id;
 
@@ -57,6 +57,13 @@ class JSONRPCResponse extends JSONRPCObject {
     public $date;
     /**************************************************************************/
 
+    /**
+     * Constructor
+     *
+     * @param mixed $result
+     * @param JSONRPCError $error
+     * @param int $id
+     */
     public function __construct($result = null, JSONRPCError $error = null, $id = null) {
 
         $this->result = $result;
